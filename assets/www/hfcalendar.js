@@ -2,7 +2,6 @@ $(document).ready(function() {
   var db = getDB();
   var totaltrecords;
   countRecords(db, function (records) { 
-    console.log(records);
     if (records == 0 ) {
       updateDatabase(db);
     } else {
@@ -36,6 +35,54 @@ function countRecords(db, callback) {
   return val;
 }
 
+
+function updateDatabase(db) {
+  $.mobile.showPageLoadingMsg();
+  
+  $.getJSON('http://www.apievangelist.com/events/api/v1/json/', function(data) {
+    var items = data.Events;
+    var list = $('#events');
+    list.html("");
+    $.each(items, function(key, val) {
+      //console.log(val);
+      var about = val.About;
+      about = about.replace(/\"/g, "'");
+      var data = [parseInt(val.ID), val.Name, about, val.Start_Date, val.End_Date, val.URL, val.Address, val.City, val.State, val.Postal_Code, val.Country, val.Post_Date, val.Email, val.HashTag, val.TwitterHandle];
+      db.transaction(function(tx) {
+        tx.executeSql('INSERT INTO calendar (id,title,description,start_date,end_date,url,address,city,state,zipcode,country,post_date,email,hashtag,twitter)' +
+            ' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);', 
+            data
+         );
+        });
+      });
+    $.mobile.hidePageLoadingMsg();
+    });
+  };
+
+function displayData(db) {
+
+  var list = $('#events')
+  db.transaction(function(tx) {
+    tx.executeSql('SELECT * FROM calendar', [], function(tx, results) {
+      var len = results.rows.length, i;
+      for (i = 0; i < len; i++) {
+        var result = results.rows.item(i);
+        var listitem = $(document.createElement('li'));
+        listitem.attr('data-icon', 'arrow-r');
+        var itemText = '<a href="#event">';
+        itemText = itemText + '';
+        itemText = itemText + '<h2>' + result['title'] + '</h2>';
+        itemText = itemText + '<p><strong>' + getLocationString(result['city'], result['state']) + '</strong></p>';
+        itemText = itemText + '<p>' + getEventDate(result['start_date'], result['end_date']) + '</p>';
+        itemText = itemText + '</a>';
+        listitem.append(itemText);
+        list.append(listitem);
+      }
+      $('#events').listview('refresh');
+    });
+  });  
+}
+
 function simpleDate(dateValue) {
   if (dateValue.length > 0) {
     return dateValue.substring(5, 10);
@@ -60,6 +107,19 @@ function getEventDate(startDate, endDate) {
   }
 }
 
+function getLocationString(city, state) {
+
+  if (city.length > 0 && state.length > 0) {
+    return city + ', ' + state;
+  } else {
+    if (city.length > 0) {
+      return city;
+    } else {
+      return state;
+    }
+  }
+}
+
 function monthName(monthValue) {
   var month = new Array();
   month[0] = "January";
@@ -76,101 +136,4 @@ function monthName(monthValue) {
   month[11] = "December";
   return month[monthValue];
 }
-
-function grabData() {
-  $.getJSON('http://www.apievangelist.com/events/api/v1/json/', function(data) {
-    var items = data.Events;
-    var list = $('#events');
-    list.html("");
-    $.each(items, function(key, val) {
-      var listitem = $(document.createElement('li'));
-      listitem.attr('data-icon', 'false');
-      listitem.append('<p><a href="#"><h3>' + val.Name + '</h3></p>');
-      listitem.append('<p><strong>' + val.City + ', ' + val.State
-          + '</strong></p>');
-      listitem.append('<p>' + getEventDate(val.Start_Date, val.End_Date)
-          + '</p></a>');
-      // listitem.append($(document.createElement('p')).html(val.City);
-      list.append(listitem);
-    });
-
-    list.listview("destroy").listview()
-
-  });
-
-  //document.addEventListener("deviceready", onDeviceReady, false);
-}
-
-function updateDatabase(db) {
-  $.mobile.showPageLoadingMsg();
-  
-  $.getJSON('http://www.apievangelist.com/events/api/v1/json/', function(data) {
-    var items = data.Events;
-    var list = $('#events');
-    list.html("");
-    $.each(items, function(key, val) {
-      //console.log(val);
-      var about = val.About;
-      about = about.replace(/\"/g, "'");
-      var data = [parseInt(val.ID), val.Name, about, val.Start_Date, val.End_Date, val.URL, val.Address, val.City, val.State, val.Postal_Code, val.Country, val.Post_Date, val.Email, val.HashTag, val.TwitterHandle];
-      db.transaction(function(tx) {
-        tx.executeSql('INSERT INTO calendar (id,title,description,start_date,end_date,url,address,city,state,zipcode,country,post_date,email,hashtag,twitter)' +
-            ' VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);', 
-            data, 
-            function(tx, result) { console.log('success'); }, function(error) { console.log('error'); }
-         );
-        console.log(data);
-        });
-      });
-    $.mobile.hidePageLoadingMsg();
-    });
-
-    //list.listview("destroy").listview()
-
-  };
-
-function displayData(db) {
-
-  var list = $('#events')
-  db.transaction(function(tx) {
-    tx.executeSql('SELECT * FROM calendar', [], function(tx, results) {
-      var len = results.rows.length, i;
-      for (i = 0; i < len; i++) {
-        console.log(results.rows.item(i));
-        var result = results.rows.item(i);
-        var listitem = $(document.createElement('li'));
-        listitem.attr('data-icon', 'false');
-        listitem.append('<p><a href="#"><h3>' + result['title'] + '</h3></p>');
-        listitem.append('<p><strong>' + result['city'] + ', ' + result['state'] + '</strong></p>');
-        listitem.append('<p>' + getEventDate(result['start_date'], result['end_date']) + '</p></a>');
-        list.append(listitem);
-      }
-    });
-  });
-  
-  
-  //var listitem = $(document.createElement('li'));
-  //listitem.attr('data-icon', 'false');
-  //listitem.append('<p><a href="#"><h3>' + val.Name + '</h3></p>');
-  //listitem.append('<p><strong>' + val.City + ', ' + val.State
-    //  + '</strong></p>');
-  //listitem.append('<p>' + getEventDate(val.Start_Date, val.End_Date)
-    //  + '</p></a>');
-  // listitem.append($(document.createElement('p')).html(val.City);
-  //list.append(listitem);
-  
-  
-}
-  
-  
-  //var listitem = $(document.createElement('li'));
-  //listitem.attr('data-icon', 'false');
-  //listitem.append('<p><a href="#"><h3>' + val.Name + '</h3></p>');
-  //listitem.append('<p><strong>' + val.City + ', ' + val.State
-    //  + '</strong></p>');
-  //listitem.append('<p>' + getEventDate(val.Start_Date, val.End_Date)
-    //  + '</p></a>');
-  // listitem.append($(document.createElement('p')).html(val.City);
-  //list.append(listitem);
-  
   

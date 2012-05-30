@@ -1,85 +1,74 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Hackfest Calendar</title>
-	<link rel="stylesheet" href="jquery.mobile-1.1.0.min.css" /> 
-    <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
-	<script src="jquery-1.7.1.min.js"></script> 
-	<script src="jquery.mobile-1.1.0.min.js"></script>
-	<script src="hfcalendar.js"></script>
+	<title>Hackfest2 Calendar</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
+	<link rel="stylesheet" href="jquery.mobile-1.1.0.min.css" />
+	<script src="jquery-1.7.1.min.js" type="text/javascript"></script>
+	<script src="jquery.mobile-1.1.0.min.js" type="text/javascript"></script>
+	<script src="hfcalendar.js" type="text/javascript"></script>
 	<script type="text/javascript">
-    // PhoneGap is loaded and it is now safe to make calls PhoneGap methods
-    //
-    function onDeviceReady() {
-		    function reachableCallback(reachability) {
-    			// There is no consistency on the format of reachability
-    			var networkState = reachability.code || reachability;
-
-    			var states = {};
-    			states[NetworkStatus.NOT_REACHABLE]                      = 'No network connection';
-    			states[NetworkStatus.REACHABLE_VIA_CARRIER_DATA_NETWORK] = 'Carrier data connection';
-    			states[NetworkStatus.REACHABLE_VIA_WIFI_NETWORK]         = 'WiFi connection';
-
-    			alert('Connection type: ' + states[networkState]);
-			}
-			navigator.network.isReachable('phonegap.com', reachableCallback);
-    }
-</script>  
-  
+	  // PhoneGap is loaded and it is now safe to make calls PhoneGap methods
+	  //
+	  function onDeviceReady() {
+	    function reachableCallback(reachability) {
+	      // There is no consistency on the format of reachability
+	      var networkState = reachability.code || reachability;
+	
+	      var states = {};
+	      states[NetworkStatus.NOT_REACHABLE] = 'No network connection';
+	      states[NetworkStatus.REACHABLE_VIA_CARRIER_DATA_NETWORK] = 'Carrier data connection';
+	      states[NetworkStatus.REACHABLE_VIA_WIFI_NETWORK] = 'WiFi connection';
+	
+	      alert('Connection type: ' + states[networkState]);
+	    }
+	    navigator.network.isReachable('phonegap.com', reachableCallback);
+	  }
+	</script>
 </head>
 <body>
 
-  <div data-role="page" id="home"> 
- 
-  <div data-role="header" data-position="fixed"> 
-    <h1>Hackfest Calendar</h1> 
-  </div> 
- 
-  <div data-role="content">
-      <ul data-role="listview" id="events">
-      </ul>
-  </div>
+	<div data-role="page" id="home">
 
-		<div data-role="footer" data-position="fixed">
-			<h1>API Evangelist</h1>
-			<a href="index.html" class="ui-btn-left">Update List</a>
-			<a href="index.html" data-icon="gear" class="ui-btn-right">About</a>
+		<div data-role="header" data-position="fixed" data-theme="b">
+			<h1>Hackathon Calendar</h1>
+			<a href="#home" data-icon="search" class="ui-btn-right">Search</a>
 		</div>
-	</div> 
- 
-<div data-role="page" id="search"> 
- 
-  <div data-role="header" data-position="fixed"> 
-    <h1>Search Alternatives</h1> 
-    <div class="ui-body ui-body-b"> 
-     
-         <input type="text" name="search" id="searchBox" value="" data-theme="a" /> 
-         <button type="submit" data-theme="a" id="searchButton">Search</button>     
-      
-    </div>  
-  </div> 
- 
-  <div data-role="content"> 
-     
-     <ul data-role="listview" id="list"> 
-      
-    </ul> 
-  </div> 
- 
-</div>
 
-<div data-role="page" id="recent"> 
- 
-  <div data-role="header"> 
-    <h1> Recent Alternatives</h1> 
-  </div> 
- 
-  <div data-role="content"> 
-    <p>This app rocks!</p> 
-     
-  </div> 
- 
-</div> 
- 
+		<div data-role="content">
+			<div class="content-primary">
+				<ul data-role="listview" id="events" data-divider-theme="d">
+				</ul>
+			</div>
+		</div>
+
+		<div data-role="footer" data-position="fixed" data-theme="b">
+			<h1>API Evangelist</h1>
+			<a href="index.html" class="ui-btn-left">Update List</a> <a
+				href="index.html" data-icon="gear" class="ui-btn-right">About</a>
+		</div>
+	</div>
+	
+	 <div data-role="page" id="event">
+
+    <div data-role="header" data-position="fixed" data-theme="b">
+      <h1>Hackathon Calendar</h1>
+      <a href="#home" data-icon="back" data-rel="back" class="ui-btn-right">Back</a>
+    </div>
+
+    <div data-role="content">
+      <div class="content-primary">
+      </div>
+    </div>
+
+    <div data-role="footer" data-position="fixed" data-theme="b">
+      <h1>API Evangelist</h1>
+       <a href="index.html" data-icon="gear" class="ui-btn-right">About</a>
+    </div>
+  </div>
+	
+	
+
 </body>
 </html>
